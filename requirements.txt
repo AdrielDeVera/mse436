@@ -1,0 +1,9 @@
+yfinance
+finnhub-python
+pandas
+numpy
+xgboost
+scikit-learn
+streamlit
+python-dotenv
+matplotlib 

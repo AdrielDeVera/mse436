@@ -1,0 +1,29 @@
+tech_stack:
+  - Python 3.11+
+  - yfinance, Finnhub API
+  - pandas, scikit-learn, XGBoost
+  - Streamlit
+  - joblib
+  - SQLite or CSV storage
+  - python-dotenv
+
+project_structure:
+  - data/raw/
+  - data/processed/
+  - src/data_fetcher.py
+  - src/features.py
+  - src/train_model.py
+  - src/predictor.py
+  - src/run_pipeline.py
+  - app/dashboard.py
+  - evaluation/backtest.py
+  - utils/env_loader.py
+  - models/
+  - tests/
+
+guidelines:
+  - Use modular Python functions
+  - Avoid real-time APIs unless cached
+  - Use out-of-time validation
+  - Document code
+  - Write basic tests
