@@ -7,7 +7,14 @@ except ImportError:
     ta = None
 
 def load_stock_csv(file_path: str) -> pd.DataFrame:
-    return pd.read_csv(file_path, parse_dates=['Date'])
+    df = pd.read_csv(file_path, header=0, parse_dates=['Date'])
+    if 'Close' not in df.columns:
+        df = pd.read_csv(file_path, header=2, parse_dates=['Date'])
+    # Now 'Date' is always present and parsed as datetime
+    for col in df.columns:
+        if col != 'Date':
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+    return df
 
 def add_indicators(df: pd.DataFrame, sma_window=14, rsi_window=14, ema_window=14) -> pd.DataFrame:
     if ta is None:
@@ -28,7 +35,11 @@ def process_and_save_with_indicators(input_csv: str, output_csv: str, sma_window
     df = add_indicators(df, sma_window, rsi_window, ema_window)
     df = add_target_return(df, forward_days)
     if drop_na:
-        df = df.dropna()
+        # Only drop rows where features or target are NaN
+        df = df.dropna(subset=['SMA', 'RSI', 'EMA', 'target_return'])
+    # Ensure Date column is present before saving
+    if 'Date' not in df.columns and isinstance(df.index, pd.DatetimeIndex):
+        df = df.reset_index().rename(columns={'index': 'Date'})
     os.makedirs(os.path.dirname(output_csv), exist_ok=True)
     df.to_csv(output_csv, index=False)
 

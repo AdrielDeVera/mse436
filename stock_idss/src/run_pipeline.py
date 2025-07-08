@@ -8,11 +8,11 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../u
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../evaluation')))
 
-import data_fetcher
-import features
-import train_model
-import predictor
-import evaluation.backtest as backtest
+import stock_idss.src.data_fetcher as data_fetcher
+import stock_idss.src.features as features
+import stock_idss.src.train_model as train_model
+import stock_idss.src.predictor as predictor
+import stock_idss.evaluation.backtest as backtest
 
 def run_pipeline(ticker, start, end, model_path, results_dir):
     os.makedirs(results_dir, exist_ok=True)

@@ -27,8 +27,10 @@ def fetch_and_save_yfinance(ticker: str, start: str, end: str, save_dir: str = '
     df = yf.download(ticker, start=start, end=end)
     if df is None or df.empty:
         raise ValueError(f"No data fetched for {ticker} from {start} to {end}.")
+    df.index.name = 'Date'  # Name the index for clarity
+    df = df.reset_index()   # Move index to a column
     file_path = os.path.join(save_dir, f"{ticker}_{start}_{end}.csv")
-    df.to_csv(file_path)
+    df.to_csv(file_path, index=False)  # Save with Date as a column
     return file_path
 
 def fetch_and_save_finnhub(ticker: str, start: str, end: str, save_dir: str = '../data/raw/') -> str:

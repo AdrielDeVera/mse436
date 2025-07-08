@@ -5,8 +5,10 @@ from unittest import mock
 import pandas as pd
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-import data_fetcher
-import features
+import stock_idss.src.data_fetcher as data_fetcher
+import stock_idss.src.features as features
+import stock_idss.src.train_model as train_model
+import stock_idss.src.predictor as predictor
 
 def test_fetch_and_save_yfinance(tmp_path):
     # Mock yfinance download to return a simple DataFrame
