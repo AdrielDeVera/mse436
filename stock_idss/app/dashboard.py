@@ -15,7 +15,6 @@ import stock_idss.src.features as features
 import stock_idss.src.predictor as predictor   
 
 st.title('Stock Return Prediction Dashboard')
-st.info(f"Python executable: {sys.executable}")
 
 # Sidebar for ticker and date selection
 ticker = st.sidebar.text_input('Ticker', 'AAPL')
@@ -32,7 +31,7 @@ def run_prediction():
                     st.error('No data was fetched from yfinance. Please check your ticker and date range.')
                     return
                 df_raw = pd.read_csv(raw_csv)
-                st.info(f"Fetched {df_raw.shape[0]} rows, {df_raw.shape[1]} columns from yfinance.")
+                st.toast(f"Fetched {df_raw.shape[0]} rows, {df_raw.shape[1]} columns from yfinance.")
                 if df_raw.empty:
                     st.error('Fetched data is empty. Please check your ticker and date range.')
                     return
@@ -50,7 +49,7 @@ def run_prediction():
                     st.error('Feature processing produced an empty file. Check your input data and feature code.')
                     return
                 df_check = pd.read_csv(processed_csv)
-                st.info(f"Processed data: {df_check.shape[0]} rows, {df_check.shape[1]} columns.")
+                st.toast(f"Processed data: {df_check.shape[0]} rows, {df_check.shape[1]} columns.")
                 if df_check.empty or df_check.shape[1] == 0:
                     st.error('No data found in the processed CSV after feature engineering. Please check your ticker and date range.')
                     return
@@ -67,7 +66,7 @@ def run_prediction():
                 st.error(f'Error during prediction/model step: {e}')
                 return
 
-            st.success('Prediction complete!')
+            st.toast("Prediction complete!", icon="✅")
             # Show table
             st.dataframe(df_pred[['Date', 'Close', 'predicted_return', 'predicted_label']])
             # Show price chart with overlay
