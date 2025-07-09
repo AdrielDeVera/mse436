@@ -16,6 +16,16 @@ import stock_idss.src.predictor as predictor
 
 st.title('Stock Return Prediction Dashboard')
 
+# Add link to enhanced dashboard
+st.markdown("""
+<div style="background-color: #e8f4fd; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #2196F3;">
+    <strong>🚀 New Enhanced Dashboard Available!</strong><br>
+    Try our new dashboard with fundamental analysis, advanced technical indicators, and improved visualizations.
+    <br><br>
+    <a href="?page=enhanced" target="_self" style="background-color: #2196F3; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 0.25rem;">Go to Enhanced Dashboard</a>
+</div>
+""", unsafe_allow_html=True)
+
 # Sidebar for ticker and date selection
 ticker = st.sidebar.text_input('Ticker', 'AAPL')
 start_date = st.sidebar.date_input('Start Date', date(2022, 1, 1))

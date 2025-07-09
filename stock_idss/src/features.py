@@ -43,11 +43,59 @@ def process_and_save_with_indicators(input_csv: str, output_csv: str, sma_window
     os.makedirs(os.path.dirname(output_csv), exist_ok=True)
     df.to_csv(output_csv, index=False)
 
+def process_with_fundamentals(input_csv: str, output_csv: str, ticker: str, fundamentals_dir: str = '../data/fundamentals/',
+                           sma_window=14, rsi_window=14, ema_window=14, forward_days=126, drop_na=True):
+    """
+    Process price data with both technical indicators and fundamental features.
+    
+    Args:
+        input_csv (str): Path to price data CSV
+        output_csv (str): Path to save processed data
+        ticker (str): Stock ticker symbol
+        fundamentals_dir (str): Directory containing fundamental data
+        sma_window (int): SMA window size
+        rsi_window (int): RSI window size
+        ema_window (int): EMA window size
+        forward_days (int): Forward window for target return
+        drop_na (bool): Whether to drop rows with NaN values
+    """
+    try:
+        # Import enhanced features module
+        from enhanced_features import create_comprehensive_feature_set
+        
+        # Create comprehensive feature set
+        df = create_comprehensive_feature_set(
+            ticker=ticker,
+            price_csv=input_csv,
+            fundamentals_dir=fundamentals_dir,
+            output_csv=output_csv
+        )
+        
+        # Drop NaN values if requested
+        if drop_na:
+            feature_cols = [col for col in df.columns if col not in ['Date', 'ticker', 'target_return']]
+            df = df.dropna(subset=feature_cols + ['target_return'])
+        
+        # Save the processed data
+        os.makedirs(os.path.dirname(output_csv), exist_ok=True)
+        df.to_csv(output_csv, index=False)
+        
+        print(f"Processed data with fundamentals saved to {output_csv}")
+        print(f"Features: {len([col for col in df.columns if col not in ['Date', 'ticker', 'target_return']])}")
+        print(f"Rows: {len(df)}")
+        
+    except ImportError:
+        print("Enhanced features module not available, falling back to basic indicators")
+        process_and_save_with_indicators(input_csv, output_csv, sma_window, rsi_window, ema_window, forward_days, drop_na)
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Compute indicators and save processed CSV.")
     parser.add_argument("input_csv", type=str, help="Input CSV file path")
     parser.add_argument("output_csv", type=str, help="Output CSV file path")
+    parser.add_argument("--ticker", type=str, help="Stock ticker symbol (required for fundamental features)")
+    parser.add_argument("--fundamentals_dir", type=str, default="../data/fundamentals/", help="Directory for fundamental data")
+    parser.add_argument("--use_fundamentals", action="store_true", help="Include fundamental features")
     parser.add_argument("--sma_window", type=int, default=14)
     parser.add_argument("--rsi_window", type=int, default=14)
     parser.add_argument("--ema_window", type=int, default=14)
@@ -56,4 +104,26 @@ if __name__ == "__main__":
     parser.add_argument("--no-drop_na", dest="drop_na", action="store_false", help="Do not drop NA rows")
     parser.set_defaults(drop_na=True)
     args = parser.parse_args()
-    process_and_save_with_indicators(args.input_csv, args.output_csv, args.sma_window, args.rsi_window, args.ema_window, args.forward_days, args.drop_na)
+    
+    if args.use_fundamentals and args.ticker:
+        process_with_fundamentals(
+            args.input_csv, 
+            args.output_csv, 
+            args.ticker, 
+            args.fundamentals_dir,
+            args.sma_window, 
+            args.rsi_window, 
+            args.ema_window, 
+            args.forward_days, 
+            args.drop_na
+        )
+    else:
+        process_and_save_with_indicators(
+            args.input_csv, 
+            args.output_csv, 
+            args.sma_window, 
+            args.rsi_window, 
+            args.ema_window, 
+            args.forward_days, 
+            args.drop_na
+        )

@@ -10,4 +10,6 @@ matplotlib
 plotly
 pandas_ta
 pytest
-requests 
+requests
+# Additional dependencies for fundamental features
+openpyxl  # For Excel file support in pandas 
