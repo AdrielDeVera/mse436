@@ -23,12 +23,22 @@ def fetch_and_save_yfinance(ticker: str, start: str, end: str, save_dir: str = '
     Returns:
         str: Path to the saved CSV file.
     """
+    print(f"[DEBUG] Fetching data for ticker: {ticker}, start: {start}, end: {end}")
     os.makedirs(save_dir, exist_ok=True)
-    df = yf.download(ticker, start=start, end=end)
+    try:
+        df = yf.download(ticker, start=start, end=end)
+        print(f"[DEBUG] DataFrame type: {type(df)}")
+        print(f"[DEBUG] DataFrame shape: {df.shape if df is not None else 'None'}")
+    except Exception as e:
+        print(f"[ERROR] Exception during yf.download: {e}")
+        raise
     if df is None or df.empty:
+        print(f"[ERROR] No data fetched for {ticker} from {start} to {end}.")
         raise ValueError(f"No data fetched for {ticker} from {start} to {end}.")
     file_path = os.path.join(save_dir, f"{ticker}_{start}_{end}.csv")
-    df.to_csv(file_path)
+    df = df.reset_index()  # Moves the index (date) into a column named 'Date'
+    df.to_csv(file_path, index=False)
+    print(f"[DEBUG] Saved data to {file_path}, size: {os.path.getsize(file_path)} bytes")
     return file_path
 
 def fetch_and_save_finnhub(ticker: str, start: str, end: str, save_dir: str = '../data/raw/') -> str:

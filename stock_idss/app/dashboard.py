@@ -7,6 +7,7 @@ import sys
 import plotly.express as px
 
 # Import project modules
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../utils')))
 import src.data_fetcher as data_fetcher
@@ -23,10 +24,16 @@ end_date = st.sidebar.date_input('End Date', date.today())
 def run_prediction():
     with st.spinner('Fetching data and running prediction...'):
         try:
-            raw_csv = tempfile.NamedTemporaryFile(delete=False, suffix='.csv').name
-            data_fetcher.fetch_and_save_yfinance(ticker, str(start_date), str(end_date), save_dir=os.path.dirname(raw_csv))
+            # Replace the temp file logic with the correct fetcher return value
+            raw_csv = data_fetcher.fetch_and_save_yfinance(ticker, str(start_date), str(end_date), save_dir=tempfile.gettempdir())
+            # After fetching data
+            print(f"Raw CSV path: {raw_csv}")
+            print(f"Raw CSV size: {os.path.getsize(raw_csv)} bytes")
             processed_csv = tempfile.NamedTemporaryFile(delete=False, suffix='.csv').name
             features.process_and_save_with_indicators(raw_csv, processed_csv)
+            # After processing features
+            print(f"Processed CSV path: {processed_csv}")
+            print(f"Processed CSV size: {os.path.getsize(processed_csv)} bytes")
             # Check if processed CSV has data
             try:
                 df_check = pd.read_csv(processed_csv)
