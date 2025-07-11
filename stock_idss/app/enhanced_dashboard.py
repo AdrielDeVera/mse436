@@ -140,6 +140,7 @@ def display_fundamental_summary(fundamental_data):
     st.subheader("Fundamental Analysis")
     
     # Create columns for different categories
+    
     col1, col2, col3 = st.columns(3)
     
     with col1:
